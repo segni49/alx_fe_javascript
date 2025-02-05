@@ -27,8 +27,22 @@ function addQuote() {
   }
 }
 
+// Function to create and add the quote form dynamically
+function createAddQuoteForm() {
+  const formDiv = document.createElement('div');
+  formDiv.innerHTML = `
+    <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+    <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+    <button onclick="addQuote()">Add Quote</button>
+  `;
+  document.body.appendChild(formDiv);
+}
+
 // Event listener for 'Show New Quote' button
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+
+// Call the function to create and add the form on page load
+createAddQuoteForm();
 
 // Optional: Function to display all quotes (if you want to show a list of all quotes)
 function updateQuoteList() {
