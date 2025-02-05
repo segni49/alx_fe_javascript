@@ -4,6 +4,9 @@ let quotes = [
   { text: "Life is 10% what happens to us and 90% how we react to it.", category: "Attitude" }
 ];
 
+// Simulate server URL (JSONPlaceholder for demo purposes)
+const serverUrl = 'https://jsonplaceholder.typicode.com/posts';
+
 // Load quotes from local storage when the application initializes
 window.onload = function() {
   if (localStorage.getItem('quotes')) {
@@ -16,13 +19,25 @@ window.onload = function() {
     document.getElementById('categoryFilter').value = lastCategory;
     filterQuotes();
   }
+  fetchQuotesFromServer();
+  setInterval(fetchQuotesFromServer, 60000); // Fetch quotes from server every minute
 }
 
-// Function to display a random quote
-function showRandomQuote() {
-  const randomIndex = Math.floor(Math.random() * quotes.length);
-  const quote = quotes[randomIndex];
-  document.getElementById('quoteDisplay').innerHTML = `<p>"${quote.text}"</p><p> - ${quote.category}</p>`;
+// Function to fetch quotes from the server
+function fetchQuotesFromServer() {
+  fetch(serverUrl)
+    .then(response => response.json())
+    .then(serverQuotes => {
+      const serverQuoteObjects = serverQuotes.map(q => ({ text: q.title, category: 'Server' }));
+      const newQuotes = serverQuoteObjects.filter(sq => !quotes.some(lq => lq.text === sq.text));
+      if (newQuotes.length > 0) {
+        quotes.push(...newQuotes);
+        saveQuotes();
+        alert('New quotes fetched from server!');
+      }
+      updateQuoteList();
+    })
+    .catch(error => console.error('Error fetching quotes:', error));
 }
 
 // Function to save quotes to local storage
