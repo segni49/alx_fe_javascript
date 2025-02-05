@@ -55,6 +55,7 @@ async function syncQuotes() {
       const result = await response.json();
       console.log('Quote synced with server:', result);
     }
+    alert('Quotes synced with server!');
   } catch (error) {
     console.error('Error syncing quotes with server:', error);
   }
