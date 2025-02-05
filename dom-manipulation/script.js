@@ -9,7 +9,13 @@ window.onload = function() {
   if (localStorage.getItem('quotes')) {
     quotes = JSON.parse(localStorage.getItem('quotes'));
   }
+  populateCategories();
   createAddQuoteForm();
+  const lastCategory = localStorage.getItem('selectedCategory');
+  if (lastCategory) {
+    document.getElementById('categoryFilter').value = lastCategory;
+    filterQuotes();
+  }
 }
 
 // Function to display a random quote
@@ -34,6 +40,7 @@ function addQuote() {
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
     alert('New quote added!');
+    populateCategories();
     updateQuoteList(); // Optional: update the display of all quotes if you want to show them
   } else {
     alert('Please enter both quote and category.');
@@ -77,16 +84,37 @@ function importFromJsonFile(event) {
   fileReader.readAsText(event.target.files[0]);
 }
 
+// Function to populate the categories dropdown
+function populateCategories() {
+  const categoryFilter = document.getElementById('categoryFilter');
+  const uniqueCategories = [...new Set(quotes.map(quote => quote.category))];
+  categoryFilter.innerHTML = '<option value="all">All Categories</option>';
+  uniqueCategories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.appendChild(option);
+  });
+}
+
+// Function to filter quotes based on the selected category
+function filterQuotes() {
+  const selectedCategory = document.getElementById('categoryFilter').value;
+  localStorage.setItem('selectedCategory', selectedCategory);
+  const filteredQuotes = selectedCategory === 'all' ? quotes : quotes.filter(quote => quote.category === selectedCategory);
+  const quoteDisplay = document.getElementById('quoteDisplay');
+  quoteDisplay.innerHTML = ''; // Clear the current content
+  filteredQuotes.forEach(quote => {
+    const quoteElement = document.createElement('div');
+    quoteElement.innerHTML = `<p>"${quote.text}"</p><p> - ${quote.category}</p>`;
+    quoteDisplay.appendChild(quoteElement);
+  });
+}
+
 // Event listener for 'Show New Quote' button
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 
 // Optional: Function to display all quotes (if you want to show a list of all quotes)
 function updateQuoteList() {
-  const quoteList = document.getElementById('quoteDisplay');
-  quoteList.innerHTML = ''; // Clear the current content
-  quotes.forEach(quote => {
-    const quoteElement = document.createElement('div');
-    quoteElement.innerHTML = `<p>"${quote.text}"</p><p> - ${quote.category}</p>`;
-    quoteList.appendChild(quoteElement);
-  });
+  filterQuotes(); // Filter quotes based on the current selection
 }
