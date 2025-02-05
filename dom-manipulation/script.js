@@ -8,7 +8,7 @@ let quotes = [
 const serverUrl = 'https://jsonplaceholder.typicode.com/posts';
 
 // Load quotes from local storage when the application initializes
-window.onload = function() {
+window.onload = async function() {
   if (localStorage.getItem('quotes')) {
     quotes = JSON.parse(localStorage.getItem('quotes'));
   }
@@ -19,25 +19,26 @@ window.onload = function() {
     document.getElementById('categoryFilter').value = lastCategory;
     filterQuotes();
   }
-  fetchQuotesFromServer();
+  await fetchQuotesFromServer();
   setInterval(fetchQuotesFromServer, 60000); // Fetch quotes from server every minute
 }
 
 // Function to fetch quotes from the server
-function fetchQuotesFromServer() {
-  fetch(serverUrl)
-    .then(response => response.json())
-    .then(serverQuotes => {
-      const serverQuoteObjects = serverQuotes.map(q => ({ text: q.title, category: 'Server' }));
-      const newQuotes = serverQuoteObjects.filter(sq => !quotes.some(lq => lq.text === sq.text));
-      if (newQuotes.length > 0) {
-        quotes.push(...newQuotes);
-        saveQuotes();
-        alert('New quotes fetched from server!');
-      }
-      updateQuoteList();
-    })
-    .catch(error => console.error('Error fetching quotes:', error));
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch(serverUrl);
+    const serverQuotes = await response.json();
+    const serverQuoteObjects = serverQuotes.map(q => ({ text: q.title, category: 'Server' }));
+    const newQuotes = serverQuoteObjects.filter(sq => !quotes.some(lq => lq.text === sq.text));
+    if (newQuotes.length > 0) {
+      quotes.push(...newQuotes);
+      saveQuotes();
+      alert('New quotes fetched from server!');
+    }
+    updateQuoteList();
+  } catch (error) {
+    console.error('Error fetching quotes:', error);
+  }
 }
 
 // Function to save quotes to local storage
