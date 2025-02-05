@@ -9,7 +9,7 @@ const quotes = [
 function showRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const quote = quotes[randomIndex];
-  document.getElementById('quoteDisplay').innerText = `"${quote.text}" - ${quote.category}`;
+  document.getElementById('quoteDisplay').innerHTML = `<p>"${quote.text}"</p><p> - ${quote.category}</p>`;
 }
 
 // Function to add a new quote
@@ -21,6 +21,7 @@ function addQuote() {
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
     alert('New quote added!');
+    updateQuoteList(); // Optional: update the display of all quotes if you want to show them
   } else {
     alert('Please enter both quote and category.');
   }
@@ -29,3 +30,13 @@ function addQuote() {
 // Event listener for 'Show New Quote' button
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 
+// Optional: Function to display all quotes (if you want to show a list of all quotes)
+function updateQuoteList() {
+  const quoteList = document.getElementById('quoteDisplay');
+  quoteList.innerHTML = ''; // Clear the current content
+  quotes.forEach(quote => {
+    const quoteElement = document.createElement('div');
+    quoteElement.innerHTML = `<p>"${quote.text}"</p><p> - ${quote.category}</p>`;
+    quoteList.appendChild(quoteElement);
+  });
+}
