@@ -20,7 +20,7 @@ window.onload = async function() {
     filterQuotes();
   }
   await fetchQuotesFromServer();
-  setInterval(fetchQuotesFromServer, 60000); // Fetch quotes from server every minute
+  setInterval(syncQuotes, 60000); // Sync quotes with the server every minute
 }
 
 // Function to fetch quotes from the server
@@ -38,6 +38,25 @@ async function fetchQuotesFromServer() {
     updateQuoteList();
   } catch (error) {
     console.error('Error fetching quotes:', error);
+  }
+}
+
+// Function to sync local quotes with the server
+async function syncQuotes() {
+  try {
+    for (const quote of quotes) {
+      const response = await fetch(serverUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(quote)
+      });
+      const result = await response.json();
+      console.log('Quote synced with server:', result);
+    }
+  } catch (error) {
+    console.error('Error syncing quotes with server:', error);
   }
 }
 
